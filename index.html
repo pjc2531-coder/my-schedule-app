@@ -4,183 +4,252 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f7fb">
-  <title>일정 등록</title>
+  <title>나의 일정 관리</title>
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; padding: 28px 14px; min-height: 100vh;
-      background: #f6f7fb; color: #202437;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    .wrap { width: 100%; max-width: 520px; margin: 0 auto; }
-    .topline { display:flex; align-items:center; gap:9px; margin: 0 0 18px 2px; color:#5365d9; font-size:13px; font-weight:700; letter-spacing:.04em; }
-    .dot { width:8px; height:8px; border-radius:50%; background:#6475e8; }
-    .card {
-      background:#fff; border:1px solid #eaecf3; border-radius:22px;
-      padding:26px; box-shadow:0 12px 36px rgba(35,45,90,.07);
-    }
-    h1 { margin:0; font-size:27px; letter-spacing:-.04em; }
-    .sub { margin:8px 0 26px; color:#85899a; font-size:14px; line-height:1.5; }
-    .field { margin-bottom:19px; min-width:0; }
-    label { display:block; margin-bottom:8px; color:#42475a; font-size:13px; font-weight:700; }
-    .req { color:#e05c72; }
-    input, select, textarea {
-      width:100%; min-width:0; border:1px solid #e4e6ee; border-radius:11px;
-      background:#fff; color:#24283a; padding:13px 14px; font:inherit; font-size:15px;
-      outline:none; transition:border .15s, box-shadow .15s;
-    }
-    input:focus, select:focus, textarea:focus { border-color:#7180ec; box-shadow:0 0 0 3px rgba(113,128,236,.12); }
-    textarea { min-height:92px; resize:vertical; }
-    .times { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .hint { margin-top:7px; color:#9296a5; font-size:11px; line-height:1.45; }
-    button {
-      width:100%; border:0; border-radius:12px; padding:15px;
-      background:#596be0; color:white; font-size:15px; font-weight:750;
-      cursor:pointer; box-shadow:0 7px 15px rgba(89,107,224,.2);
-    }
-    button:hover { background:#4c5fd3; }
-    button:disabled { opacity:.6; cursor:wait; box-shadow:none; }
-    .message { display:none; margin-top:15px; padding:13px 14px; border-radius:11px; font-size:13px; line-height:1.55; overflow-wrap:anywhere; }
-    .message.success { display:block; color:#137653; background:#eaf8f1; }
-    .message.error { display:block; color:#b33d50; background:#fff0f2; }
-    @media(max-width:380px) {
-      body { padding:16px 10px; }
-      .card { padding:20px 15px; border-radius:18px; }
-      h1 { font-size:24px; }
-      .times { gap:8px; }
-      input,select,textarea { padding:12px 10px; font-size:14px; }
-    }
+    *{box-sizing:border-box}
+    body{margin:0;padding:28px 14px;min-height:100vh;background:#f6f7fb;color:#202437;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .wrap{width:100%;max-width:760px;margin:0 auto}
+    .topline{display:flex;align-items:center;gap:9px;margin:0 0 18px 2px;color:#5365d9;font-size:13px;font-weight:700;letter-spacing:.04em}
+    .dot{width:8px;height:8px;border-radius:50%;background:#6475e8}
+    .card{background:#fff;border:1px solid #eaecf3;border-radius:22px;padding:25px;box-shadow:0 12px 36px rgba(35,45,90,.07)}
+    h1{margin:0;font-size:27px;letter-spacing:-.04em}
+    .sub{margin:8px 0 22px;color:#85899a;font-size:14px;line-height:1.5}
+    .tabs{display:flex;gap:8px;margin-bottom:20px}
+    .tab{width:auto;padding:11px 18px;background:#f0f1f7;color:#5d6275;box-shadow:none}
+    .tab.active{background:#596be0;color:#fff}
+    .field{margin-bottom:17px;min-width:0}
+    label{display:block;margin-bottom:8px;color:#42475a;font-size:13px;font-weight:700}
+    .req{color:#e05c72}
+    input,select,textarea{width:100%;min-width:0;border:1px solid #e4e6ee;border-radius:11px;background:#fff;color:#24283a;padding:13px 14px;font:inherit;font-size:15px;outline:none}
+    input:focus,select:focus,textarea:focus{border-color:#7180ec;box-shadow:0 0 0 3px rgba(113,128,236,.12)}
+    textarea{min-height:85px;resize:vertical}
+    .times{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    button{width:100%;border:0;border-radius:12px;padding:14px;background:#596be0;color:#fff;font-size:15px;font-weight:750;cursor:pointer;box-shadow:0 7px 15px rgba(89,107,224,.15)}
+    button:hover{background:#4c5fd3}
+    button:disabled{opacity:.6;cursor:wait}
+    .secondary{background:#eef0f8;color:#4d5570;box-shadow:none}
+    .secondary:hover{background:#e4e7f2}
+    .danger{background:#fff0f2;color:#c04458;box-shadow:none}
+    .danger:hover{background:#ffe3e8}
+    .actions{display:flex;gap:8px;margin-top:14px}
+    .actions button{flex:1}
+    .message{display:none;margin-top:15px;padding:13px 14px;border-radius:11px;font-size:13px;line-height:1.55;overflow-wrap:anywhere}
+    .message.success{display:block;color:#137653;background:#eaf8f1}
+    .message.error{display:block;color:#b33d50;background:#fff0f2}
+    .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:16px}
+    .toolbar input{flex:1}
+    .toolbar button{width:auto;white-space:nowrap}
+    .schedule{border:1px solid #eceef4;border-radius:15px;padding:16px;margin-bottom:11px}
+    .schedule-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .category{font-size:12px;font-weight:750;color:#596be0;background:#eff1ff;padding:5px 9px;border-radius:20px}
+    .when{font-size:12px;color:#85899a}
+    .schedule-title{font-size:16px;font-weight:750;overflow-wrap:anywhere}
+    .schedule-time{margin-top:5px;color:#60667a;font-size:13px}
+    .memo{margin-top:9px;color:#85899a;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+    .empty{text-align:center;padding:35px 10px;color:#9296a5;font-size:14px}
+    .edit-panel{margin-top:18px;padding:20px;border:1px solid #dfe3fb;background:#fafaff;border-radius:16px}
+    .edit-panel h2{font-size:18px;margin:0 0 18px}
+    [hidden]{display:none!important}
+    @media(max-width:480px){body{padding:16px 10px}.card{padding:20px 15px;border-radius:18px}h1{font-size:24px}.times{gap:8px}.toolbar{align-items:stretch;flex-direction:column}.toolbar button{width:100%}.schedule-head{align-items:flex-start}}
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <div class="topline"><span class="dot"></span> MY SCHEDULE</div>
-    <section class="card">
-      <h1>일정 등록</h1>
-      <p class="sub">기억해야 할 약속과 일정을 간편하게 기록해 보세요.</p>
+<main class="wrap">
+  <div class="topline"><span class="dot"></span> MY SCHEDULE</div>
+  <section class="card">
+    <h1>나의 일정 관리</h1>
+    <p class="sub">일정을 등록하고 한곳에서 확인하고 관리해 보세요.</p>
+    <nav class="tabs">
+      <button class="tab active" id="showCreate" type="button">일정 등록</button>
+      <button class="tab" id="showList" type="button">일정 조회</button>
+    </nav>
+
+    <section id="createView">
       <form id="scheduleForm">
-        <div class="field">
-          <label for="category">구분 <span class="req">*</span></label>
-          <select id="category" required>
-            <option value="">구분을 선택해 주세요</option>
-            <option>일정</option><option>약속</option><option>시험</option><option>업무</option><option>기타</option>
-          </select>
+        <div class="field"><label for="category">구분 <span class="req">*</span></label>
+          <select id="category" required><option value="">구분을 선택해 주세요</option><option>일정</option><option>약속</option><option>시험</option><option>업무</option><option>기타</option></select>
         </div>
-        <div class="field">
-          <label for="date">날짜 <span class="req">*</span></label>
-          <input id="date" type="date" required>
-        </div>
+        <div class="field"><label for="date">날짜 <span class="req">*</span></label><input id="date" type="date" required></div>
         <div class="times">
-          <div class="field">
-            <label for="start">시작 <span class="req">*</span></label>
-            <input id="start" type="time" required>
-          </div>
-          <div class="field">
-            <label for="end">종료 <span class="req">*</span></label>
-            <input id="end" type="time" required>
-            <div class="hint">시작 시각보다 1시간 뒤로 자동 설정돼요. 직접 바꿀 수도 있어요.</div>
-          </div>
+          <div class="field"><label for="start">시작 <span class="req">*</span></label><input id="start" type="time" required></div>
+          <div class="field"><label for="end">종료 <span class="req">*</span></label><input id="end" type="time" required></div>
         </div>
-        <div class="field">
-          <label for="content">내용 <span class="req">*</span></label>
-          <input id="content" type="text" maxlength="200" placeholder="예: 친구와 점심 약속" required>
-        </div>
-        <div class="field">
-          <label for="memo">메모 <span style="font-weight:400;color:#999">(선택)</span></label>
-          <textarea id="memo" maxlength="1000" placeholder="추가로 기록할 내용이 있다면 입력해 주세요."></textarea>
-        </div>
+        <div class="field"><label for="content">내용 <span class="req">*</span></label><input id="content" type="text" maxlength="200" placeholder="예: 친구와 점심 약속" required></div>
+        <div class="field"><label for="memo">메모 (선택)</label><textarea id="memo" maxlength="1000" placeholder="추가로 기록할 내용"></textarea></div>
         <button id="saveButton" type="submit">확인 및 저장</button>
-        <div id="message" class="message" role="status" aria-live="polite"></div>
+        <div id="createMessage" class="message" role="status"></div>
       </form>
     </section>
-  </main>
-  <script>
-    const form = document.getElementById('scheduleForm');
-    const $ = id => document.getElementById(id);
-    const button = $('saveButton');
-    const message = $('message');
-    let saving = false;
 
-    function showMessage(text, type) {
-      message.textContent = text;
-      message.className = 'message ' + type;
-    }
-    function clearMessage() {
-      message.textContent = '';
-      message.className = 'message';
-    }
-    window.onerror = function(msg, source, line) {
-      showMessage('오류: ' + msg + ' (줄: ' + line + ')', 'error');
-      return false;
+    <section id="listView" hidden>
+      <div class="toolbar">
+        <input id="filterDate" type="date" aria-label="날짜로 일정 검색">
+        <button class="secondary" id="clearFilter" type="button">전체 일정 보기</button>
+        <button id="refreshButton" type="button">새로고침</button>
+      </div>
+      <div id="scheduleList"><div class="empty">일정을 불러오는 중입니다.</div></div>
+      <div id="listMessage" class="message" role="status"></div>
+      <section id="editPanel" class="edit-panel" hidden>
+        <h2>일정 수정</h2>
+        <form id="editForm">
+          <div class="field"><label for="editCategory">구분</label><select id="editCategory" required><option>일정</option><option>약속</option><option>시험</option><option>업무</option><option>기타</option></select></div>
+          <div class="field"><label for="editDate">날짜</label><input id="editDate" type="date" required></div>
+          <div class="times">
+            <div class="field"><label for="editStart">시작</label><input id="editStart" type="time" required></div>
+            <div class="field"><label for="editEnd">종료</label><input id="editEnd" type="time" required></div>
+          </div>
+          <div class="field"><label for="editContent">내용</label><input id="editContent" maxlength="200" required></div>
+          <div class="field"><label for="editMemo">메모</label><textarea id="editMemo" maxlength="1000"></textarea></div>
+          <label style="display:flex;align-items:center;gap:8px;margin:0 0 16px"><input id="editCompleted" type="checkbox" style="width:auto"> 완료한 일정</label>
+          <div class="actions"><button type="submit">수정 저장</button><button class="secondary" id="cancelEdit" type="button">취소</button></div>
+        </form>
+      </section>
+    </section>
+  </section>
+</main>
+<script>
+  const $ = id => document.getElementById(id);
+  let schedules = [];
+  let editingId = null;
+  let busy = false;
+
+  function message(id, text, type) {
+    const el = $(id); el.textContent = text; el.className = 'message ' + type;
+  }
+  function clearMessage(id) { $(id).textContent = ''; $(id).className = 'message'; }
+  async function api(data) {
+    const response = await fetch('/api/schedule', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) throw new Error(result.message || '요청에 실패했습니다.');
+    return result;
+  }
+  function switchView(view) {
+    const listing = view === 'list';
+    $('createView').hidden = listing;
+    $('listView').hidden = !listing;
+    $('showCreate').classList.toggle('active', !listing);
+    $('showList').classList.toggle('active', listing);
+    if (listing) loadSchedules();
+  }
+  $('showCreate').addEventListener('click', () => switchView('create'));
+  $('showList').addEventListener('click', () => switchView('list'));
+
+  function formData(prefix) {
+    return {
+      category: $(prefix+'Category').value,
+      date: $(prefix+'Date').value,
+      start: $(prefix+'Start').value,
+      end: $(prefix+'End').value,
+      content: $(prefix+'Content').value.trim(),
+      memo: $(prefix+'Memo').value.trim()
     };
+  }
+  function validate(data) {
+    if (!data.category || !data.date || !data.start || !data.end || !data.content) throw new Error('필수 항목을 모두 입력해 주세요.');
+    if (data.end <= data.start) throw new Error('종료 시각은 시작 시각보다 늦어야 합니다.');
+    if (data.content.length > 200 || data.memo.length > 1000) throw new Error('입력 글자 수를 확인해 주세요.');
+  }
+  $('scheduleForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (busy) return;
+    clearMessage('createMessage');
+    const data = {
+      category:$('category').value, date:$('date').value, start:$('start').value,
+      end:$('end').value, content:$('content').value.trim(), memo:$('memo').value.trim()
+    };
+    try {
+      validate(data);
+      if (!confirm('이 내용으로 일정을 저장할까요?\n\n'+data.date+' '+data.start+'~'+data.end+'\n'+data.content)) return;
+      busy = true; $('saveButton').disabled = true; $('saveButton').textContent = '저장하는 중...';
+      const result = await api(data);
+      message('createMessage', result.message || '일정이 저장되었습니다.', 'success');
+      $('scheduleForm').reset();
+    } catch(err) { message('createMessage', err.message, 'error'); }
+    finally { busy = false; $('saveButton').disabled = false; $('saveButton').textContent = '확인 및 저장'; }
+  });
 
-    $('start').addEventListener('change', () => {
-      if (!$('start').value) return;
-      const [hour, minute] = $('start').value.split(':').map(Number);
-      $('end').value = String((hour + 1) % 24).padStart(2, '0') + ':' + String(minute).padStart(2, '0');
-      clearMessage();
-    });
-
-    function validate() {
-      const data = {
-        category: $('category').value,
-        date: $('date').value,
-        start: $('start').value,
-        end: $('end').value,
-        content: $('content').value.trim(),
-        memo: $('memo').value.trim()
-      };
-      if (!['일정','약속','시험','업무','기타'].includes(data.category)) throw new Error('구분을 선택해 주세요.');
-      if (!data.date) throw new Error('날짜를 선택해 주세요.');
-      if (!data.start || !data.end) throw new Error('시작과 종료 시각을 입력해 주세요.');
-      if (data.end <= data.start) throw new Error('종료 시각은 시작 시각보다 늦어야 합니다.');
-      if (!data.content) throw new Error('일정 내용을 입력해 주세요.');
-      if (data.content.length > 200) throw new Error('일정 내용은 200자 이내로 입력해 주세요.');
-      if (data.memo.length > 1000) throw new Error('메모는 1,000자 이내로 입력해 주세요.');
-      return data;
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  async function loadSchedules() {
+    $('scheduleList').innerHTML = '<div class="empty">일정을 불러오는 중입니다.</div>';
+    clearMessage('listMessage');
+    try {
+      const result = await api({action:'list'});
+      schedules = result.schedules || [];
+      renderSchedules();
+    } catch(err) {
+      $('scheduleList').innerHTML = '';
+      message('listMessage', err.message, 'error');
     }
-
-    form.addEventListener('submit', async event => {
-      event.preventDefault();
-      if (saving) return;
-      clearMessage();
-
-      let data;
-      try { data = validate(); }
-      catch (error) { showMessage(error.message, 'error'); return; }
-
-      const summary = [
-        '구분: ' + data.category,
-        '날짜: ' + data.date,
-        '시간: ' + data.start + ' ~ ' + data.end,
-        '내용: ' + data.content,
-        '메모: ' + (data.memo || '없음')
-      ].join('\n');
-
-      if (!window.confirm('아래 내용으로 저장할까요?\n\n' + summary)) return;
-
-      saving = true;
-      button.disabled = true;
-      button.textContent = '저장하는 중...';
-
-      try {
-        const response = await fetch('/api/schedule', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-        const result = await response.json();
-        if (!response.ok || !result.success) throw new Error(result.message || '저장에 실패했습니다.');
-        showMessage(result.message, 'success');
-        form.reset();
-      } catch (error) {
-        showMessage('오류: ' + error.message, 'error');
-      } finally {
-        saving = false;
-        button.disabled = false;
-        button.textContent = '확인 및 저장';
-      }
-    });
-  </script>
+  }
+  function renderSchedules() {
+    const filter = $('filterDate').value;
+    const items = schedules.filter(s => !filter || s.date === filter);
+    if (!items.length) {
+      $('scheduleList').innerHTML = '<div class="empty">등록된 일정이 없습니다.</div>';
+      return;
+    }
+    $('scheduleList').innerHTML = items.map(s => `
+      <article class="schedule">
+        <div class="schedule-head"><span class="category">${escapeHtml(s.category)}</span><span class="when">${escapeHtml(s.date)}</span></div>
+        <div class="schedule-title">${escapeHtml(s.content)} ${s.completed ? '✓' : ''}</div>
+        <div class="schedule-time">${escapeHtml(s.start)} ~ ${escapeHtml(s.end)}</div>
+        ${s.memo ? '<div class="memo">'+escapeHtml(s.memo)+'</div>' : ''}
+        <div class="actions"><button class="secondary" type="button" data-edit="${escapeHtml(s.id)}">수정</button><button class="danger" type="button" data-delete="${escapeHtml(s.id)}">삭제</button></div>
+      </article>`).join('');
+    $('scheduleList').querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', () => beginEdit(btn.dataset.edit)));
+    $('scheduleList').querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', () => removeSchedule(btn.dataset.delete)));
+  }
+  function beginEdit(id) {
+    const s = schedules.find(item => item.id === id);
+    if (!s) return;
+    editingId = id;
+    $('editCategory').value = s.category;
+    $('editDate').value = s.date;
+    $('editStart').value = s.start;
+    $('editEnd').value = s.end;
+    $('editContent').value = s.content;
+    $('editMemo').value = s.memo || '';
+    $('editCompleted').checked = !!s.completed;
+    $('editPanel').hidden = false;
+    $('editPanel').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  $('editForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!editingId || busy) return;
+    try {
+      const data = formData('edit');
+      validate(data);
+      if (!confirm('수정한 내용으로 저장할까요?')) return;
+      busy = true;
+      await api({...data, action:'update', id:editingId, completed:$('editCompleted').checked});
+      message('listMessage', '일정이 수정되었습니다.', 'success');
+      $('editPanel').hidden = true; editingId = null;
+      await loadSchedules();
+    } catch(err) { message('listMessage', err.message, 'error'); }
+    finally { busy = false; }
+  });
+  $('cancelEdit').addEventListener('click', () => { editingId = null; $('editPanel').hidden = true; });
+  async function removeSchedule(id) {
+    const s = schedules.find(item => item.id === id);
+    if (!s || busy) return;
+    if (!confirm('정말 이 일정을 삭제할까요?\n\n'+s.date+' '+s.content+'\n삭제한 일정은 복구할 수 없습니다.')) return;
+    try {
+      busy = true;
+      await api({action:'delete', id});
+      message('listMessage', '일정이 삭제되었습니다.', 'success');
+      if (editingId === id) { editingId = null; $('editPanel').hidden = true; }
+      await loadSchedules();
+    } catch(err) { message('listMessage', err.message, 'error'); }
+    finally { busy = false; }
+  }
+  $('refreshButton').addEventListener('click', loadSchedules);
+  $('filterDate').addEventListener('change', renderSchedules);
+  $('clearFilter').addEventListener('click', () => { $('filterDate').value = ''; renderSchedules(); });
+</script>
 </body>
 </html>
