@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7fb">
+  <title>일정 등록</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 28px 14px; min-height: 100vh;
+      background: #f6f7fb; color: #202437;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .wrap { width: 100%; max-width: 520px; margin: 0 auto; }
+    .topline { display:flex; align-items:center; gap:9px; margin: 0 0 18px 2px; color:#5365d9; font-size:13px; font-weight:700; letter-spacing:.04em; }
+    .dot { width:8px; height:8px; border-radius:50%; background:#6475e8; }
+    .card {
+      background:#fff; border:1px solid #eaecf3; border-radius:22px;
+      padding:26px; box-shadow:0 12px 36px rgba(35,45,90,.07);
+    }
+    h1 { margin:0; font-size:27px; letter-spacing:-.04em; }
+    .sub { margin:8px 0 26px; color:#85899a; font-size:14px; line-height:1.5; }
+    .field { margin-bottom:19px; min-width:0; }
+    label { display:block; margin-bottom:8px; color:#42475a; font-size:13px; font-weight:700; }
+    .req { color:#e05c72; }
+    input, select, textarea {
+      width:100%; min-width:0; border:1px solid #e4e6ee; border-radius:11px;
+      background:#fff; color:#24283a; padding:13px 14px; font:inherit; font-size:15px;
+      outline:none; transition:border .15s, box-shadow .15s;
+    }
+    input:focus, select:focus, textarea:focus { border-color:#7180ec; box-shadow:0 0 0 3px rgba(113,128,236,.12); }
+    textarea { min-height:92px; resize:vertical; }
+    .times { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .hint { margin-top:7px; color:#9296a5; font-size:11px; line-height:1.45; }
+    button {
+      width:100%; border:0; border-radius:12px; padding:15px;
+      background:#596be0; color:white; font-size:15px; font-weight:750;
+      cursor:pointer; box-shadow:0 7px 15px rgba(89,107,224,.2);
+    }
+    button:hover { background:#4c5fd3; }
+    button:disabled { opacity:.6; cursor:wait; box-shadow:none; }
+    .message { display:none; margin-top:15px; padding:13px 14px; border-radius:11px; font-size:13px; line-height:1.55; overflow-wrap:anywhere; }
+    .message.success { display:block; color:#137653; background:#eaf8f1; }
+    .message.error { display:block; color:#b33d50; background:#fff0f2; }
+    @media(max-width:380px) {
+      body { padding:16px 10px; }
+      .card { padding:20px 15px; border-radius:18px; }
+      h1 { font-size:24px; }
+      .times { gap:8px; }
+      input,select,textarea { padding:12px 10px; font-size:14px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="topline"><span class="dot"></span> MY SCHEDULE</div>
+    <section class="card">
+      <h1>일정 등록</h1>
+      <p class="sub">기억해야 할 약속과 일정을 간편하게 기록해 보세요.</p>
+      <form id="scheduleForm">
+        <div class="field">
+          <label for="category">구분 <span class="req">*</span></label>
+          <select id="category" required>
+            <option value="">구분을 선택해 주세요</option>
+            <option>일정</option><option>약속</option><option>시험</option><option>업무</option><option>기타</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="date">날짜 <span class="req">*</span></label>
+          <input id="date" type="date" required>
+        </div>
+        <div class="times">
+          <div class="field">
+            <label for="start">시작 <span class="req">*</span></label>
+            <input id="start" type="time" required>
+          </div>
+          <div class="field">
+            <label for="end">종료 <span class="req">*</span></label>
+            <input id="end" type="time" required>
+            <div class="hint">시작 시각보다 1시간 뒤로 자동 설정돼요. 직접 바꿀 수도 있어요.</div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="content">내용 <span class="req">*</span></label>
+          <input id="content" type="text" maxlength="200" placeholder="예: 친구와 점심 약속" required>
+        </div>
+        <div class="field">
+          <label for="memo">메모 <span style="font-weight:400;color:#999">(선택)</span></label>
+          <textarea id="memo" maxlength="1000" placeholder="추가로 기록할 내용이 있다면 입력해 주세요."></textarea>
+        </div>
+        <button id="saveButton" type="submit">확인 및 저장</button>
+        <div id="message" class="message" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+  </main>
+  <script>
+    const form = document.getElementById('scheduleForm');
+    const $ = id => document.getElementById(id);
+    const button = $('saveButton');
+    const message = $('message');
+    let saving = false;
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = 'message ' + type;
+    }
+    function clearMessage() {
+      message.textContent = '';
+      message.className = 'message';
+    }
+    window.onerror = function(msg, source, line) {
+      showMessage('오류: ' + msg + ' (줄: ' + line + ')', 'error');
+      return false;
+    };
+
+    $('start').addEventListener('change', () => {
+      if (!$('start').value) return;
+      const [hour, minute] = $('start').value.split(':').map(Number);
+      $('end').value = String((hour + 1) % 24).padStart(2, '0') + ':' + String(minute).padStart(2, '0');
+      clearMessage();
+    });
+
+    function validate() {
+      const data = {
+        category: $('category').value,
+        date: $('date').value,
+        start: $('start').value,
+        end: $('end').value,
+        content: $('content').value.trim(),
+        memo: $('memo').value.trim()
+      };
+      if (!['일정','약속','시험','업무','기타'].includes(data.category)) throw new Error('구분을 선택해 주세요.');
+      if (!data.date) throw new Error('날짜를 선택해 주세요.');
+      if (!data.start || !data.end) throw new Error('시작과 종료 시각을 입력해 주세요.');
+      if (data.end <= data.start) throw new Error('종료 시각은 시작 시각보다 늦어야 합니다.');
+      if (!data.content) throw new Error('일정 내용을 입력해 주세요.');
+      if (data.content.length > 200) throw new Error('일정 내용은 200자 이내로 입력해 주세요.');
+      if (data.memo.length > 1000) throw new Error('메모는 1,000자 이내로 입력해 주세요.');
+      return data;
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (saving) return;
+      clearMessage();
+
+      let data;
+      try { data = validate(); }
+      catch (error) { showMessage(error.message, 'error'); return; }
+
+      const summary = [
+        '구분: ' + data.category,
+        '날짜: ' + data.date,
+        '시간: ' + data.start + ' ~ ' + data.end,
+        '내용: ' + data.content,
+        '메모: ' + (data.memo || '없음')
+      ].join('\n');
+
+      if (!window.confirm('아래 내용으로 저장할까요?\n\n' + summary)) return;
+
+      saving = true;
+      button.disabled = true;
+      button.textContent = '저장하는 중...';
+
+      try {
+        const response = await fetch('/api/schedule', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || '저장에 실패했습니다.');
+        showMessage(result.message, 'success');
+        form.reset();
+      } catch (error) {
+        showMessage('오류: ' + error.message, 'error');
+      } finally {
+        saving = false;
+        button.disabled = false;
+        button.textContent = '확인 및 저장';
+      }
+    });
+  </script>
+</body>
+</html>
