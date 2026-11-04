@@ -34,8 +34,16 @@ module.exports = async function handler(req, res) {
     try {
       result = JSON.parse(raw);
     } catch (_) {
+      const contentType = response.headers.get('content-type') || 'unknown';
+      const finalHost = (() => {
+        try { return new URL(response.url).hostname; } catch (_) { return 'unknown'; }
+      })();
+
       throw new Error(
-        'Google Apps Script가 JSON이 아닌 응답을 반환했습니다. 웹앱 배포 권한과 URL을 확인해 주세요.'
+        'GAS 응답 진단: HTTP ' + response.status +
+        ', Content-Type=' + contentType +
+        ', redirected=' + response.redirected +
+        ', finalHost=' + finalHost
       );
     }
 
